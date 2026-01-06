@@ -1,1251 +1,509 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#121212">
-<link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/wallet.png">
-
-
-
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resumo de Ganhos e Gastos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Financeiro Elite Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#020617">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background: #121212;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 20px 10px;
-            background: linear-gradient(to bottom, #121212, #0a0a0a);
-            min-height: 100vh;
+        :root {
+            --bg: #020617;
+            --surface: #0f172a;
+            --surface-accent: #1e293b;
+            --primary: #6366f1;
+            --secondary: #22d3ee;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #1a1a1a;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 100px; }
+
+        .header-app {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
             padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        h1 {
-            text-align: center;
-            color: #bb86fc;
-            margin-bottom: 20px;
-            font-size: 2em;
-            font-weight: 700;
-        }
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 20px;
-            background-color: #2c2c2c;
-            border-radius: 12px;
-            padding: 6px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
-        }
-        .tabs button {
-            background-color: transparent;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 0.9em;
-            flex-grow: 1;
-            margin: 3px;
-        }
-        .tabs button.active {
-            background-color: #03dac6;
-            font-weight: 600;
-        }
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .filter-section, .input-form, .backup-section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            background-color: #1f1f1f;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .input-form h2, .backup-section h2 {
-            width: 100%;
-            text-align: center;
-            color: #fff;
-            margin: 0 0 10px 0;
-            font-size: 1.2em;
-        }
-        .filter-section button, .filter-section select, .input-form input, .input-form button, .backup-section button, .input-form textarea {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 0.9em;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            flex-grow: 1;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
-        }
-        .input-form textarea {
-            min-height: 60px;
-            resize: vertical;
-        }
-        .filter-section button:hover, .filter-section button.active, .input-form button:hover, .action-buttons button:hover, .backup-section button:hover {
-            background-color: #03dac6;
-        }
-        .input-form input, .input-form textarea {
-            background-color: #2c2c2c;
-        }
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .summary-card {
-            background-color: #2c2c2c;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .summary-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        }
-        .summary-card p {
-            margin: 0;
-            font-size: 0.8em;
-            color: #999;
-        }
-        .summary-card h3 {
-            margin-top: 5px;
-            font-size: 1.4em;
-            font-weight: 700;
-            color: #fff;
-        }
-        .card {
-            background-color: #1f1f1f;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
         }
-        .card-header h2 {
-            margin: 0;
-            font-size: 1.3em;
-            color: #fff;
-            font-weight: 600;
-        }
-        .total-gain { color: #03dac6; font-size: 1.6em; font-weight: 700; }
-        .total-expense { color: #cf6679; font-size: 1.6em; font-weight: 700; }
-        .total-balance { color: #03dac6; font-size: 1.6em; font-weight: 700; }
-        .negative-balance { color: #cf6679; }
-        
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+
+        h1 { font-size: 1.1rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Filtros de Período */
+        .filter-section {
+            background: var(--surface);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
             gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .detail-item { background-color: #2c2c2c; padding: 10px; border-radius: 8px; }
-        .detail-item p { margin: 0; font-size: 0.8em; color: #999; }
-        .detail-item span { display: block; font-size: 1em; font-weight: 600; color: #fff; margin-top: 5px; }
-        .action-buttons { display: flex; gap: 8px; margin-top: 10px; justify-content: flex-end; }
-        .action-buttons button { background-color: #555; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: background-color 0.3s ease; font-size: 0.8em; }
+
+        .period-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .period-btn {
+            background: var(--surface-accent);
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .period-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .date-picker-row {
+            display: flex;
+            gap: 10px;
+            animation: fadeIn 0.3s;
+        }
+
+        .date-picker-row input, .date-picker-row select {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--surface-accent);
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        .container { padding: 0 15px; }
+
+        /* Dashboard Cards */
+        .main-card {
+            background: var(--gradient);
+            border-radius: 24px;
+            padding: 25px;
+            margin: 15px 0;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .main-card p { font-size: 0.8rem; opacity: 0.9; }
+        .main-card h2 { font-size: 2rem; font-weight: 800; }
+
+        .sub-stats {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 18px;
+        }
+
+        .stat-item label { font-size: 0.65rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .stat-item span { font-weight: 700; font-size: 0.95rem; }
+
+        /* Transactions */
+        .transaction-card {
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .t-header { display: flex; justify-content: space-between; align-items: center; }
+        .t-info h4 { font-size: 0.9rem; }
+        .t-info p { font-size: 0.7rem; color: var(--text-muted); }
+        .t-amount { font-weight: 800; font-size: 1rem; }
+
+        .t-actions {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+        }
+
+        .btn-sm {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-edit { background: var(--surface-accent); color: var(--secondary); }
+        .btn-del { background: rgba(244, 63, 94, 0.1); color: var(--danger); }
+
+        /* Forms */
+        .form-container {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 24px;
+            margin-top: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%; background: var(--bg); border: 1px solid var(--surface-accent);
+            padding: 12px; border-radius: 10px; color: white; margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            width: 100%; background: var(--gradient); color: white; border: none;
+            padding: 14px; border-radius: 12px; font-weight: 700;
+        }
+
+        /* Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; padding: 12px 10px 25px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-item {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 0.65rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+
+        .nav-item.active { color: var(--primary); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .backup-section { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
-        .backup-section button { background-color: #333; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; font-size: 0.9em; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); }
-        .backup-section button:hover { background-color: #03dac6; }
-        #chart-container { padding: 15px; background-color: #1f1f1f; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
-        .chart-legend { text-align: center; font-weight: 600; margin-bottom: 8px; }
-        #data-container, #expenses-container, #financial-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card-financial { background-color: #1f1f1f; }
-        .card-financial.gain .card-header .header-value { color: #03dac6; }
-        .card-financial.expense .card-header .header-value { color: #cf6679; }
     </style>
 </head>
 <body>
 
+<header class="header-app">
+    <h1>FINANCEIRO PRO</h1>
+    <div style="display:flex; gap: 8px;">
+        <button onclick="document.getElementById('importFile').click()" style="background:none; border:1px solid var(--surface-accent); color:white; padding:5px 10px; border-radius:8px; font-size:0.7rem">Importar</button>
+        <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+    </div>
+</header>
+
+<section class="filter-section">
+    <div class="period-selector">
+        <button class="period-btn" onclick="setPeriod('day')">Dia</button>
+        <button class="period-btn" onclick="setPeriod('week')">Semana</button>
+        <button class="period-btn active" onclick="setPeriod('month')">Mês</button>
+        <button class="period-btn" onclick="setPeriod('year')">Ano</button>
+    </div>
+    
+    <div id="date-controls" class="date-picker-row">
+        </div>
+</section>
+
 <div class="container">
-    <h1>Resumo de Ganhos e Gastos</h1>
-
-    <div class="tabs">
-        <button id="view-tab" class="active">Ganhos</button>
-        <button id="add-tab">Add Ganhos</button>
-        <button id="expenses-tab">Gastos</button>
-        <button id="add-expense-tab">Add Gastos</button>
-        <button id="financial-tab">Resumo Financeiro</button>
-        <button id="chart-tab">Gráficos</button>
-    </div>
-
-    <div id="view-content" class="tab-content active">
-        <div class="backup-section">
-            <button id="export-data-btn">Exportar Dados</button>
-            <button id="export-csv-btn">Exportar para Planilha</button>
-            <input type="file" id="import-file" style="display:none;" accept=".json">
-            <button id="import-data-btn">Importar Dados</button>
-        </div>
-        
-        <div class="filter-section" id="earnings-filter-section">
-            <button id="earnings-filter-all" class="active">Todos</button>
-            <button id="earnings-filter-week">Últimos 7 dias</button>
-            <button id="earnings-filter-month-button">Últimos 30 dias</button>
-            <select id="earnings-filter-month-select">
-                <option value="all-months">Selecionar Mês</option>
-            </select>
-            <select id="earnings-filter-day">
-                <option value="all-days">Selecionar Dia</option>
-            </select>
-        </div>
-    
-        <div class="summary-cards">
-            <div class="summary-card">
-                <p>Total de Ganhos</p>
-                <h3 id="total-gain-display">R$0,00</h3>
-            </div>
-            <div class="summary-card">
-                <p>Total de KM Rodados</p>
-                <h3 id="total-km">0 km</h3>
-            </div>
-            <div class="summary-card">
-                <p>Total de Gasto com Combustível</p>
-                <h3 id="total-fuel">R$0,00</h3>
-            </div>
-            <div class="summary-card">
-                <p>Ganho Líquido Total</p>
-                <h3 id="total-net-gain">R$0,00</h3>
-            </div>
-            <div class="summary-card">
-                <p>Lucro por KM</p>
-                <h3 id="net-gain-per-km">R$0,00</h3>
-            </div>
-            <div class="summary-card">
-                <p>Custo por KM</p>
-                <h3 id="fuel-cost-per-km">R$0,00</h3>
+    <div id="tab-dash" class="tab-content active">
+        <div class="main-card">
+            <p>Saldo do Período</p>
+            <h2 id="display-balance">R$ 0,00</h2>
+            <div style="display: flex; gap: 20px; margin-top: 10px;">
+                <div><p style="font-size: 0.65rem;">Bruto</p><strong id="display-gross">R$ 0,00</strong></div>
+                <div><p style="font-size: 0.65rem;">Km</p><strong id="display-km">0</strong></div>
             </div>
         </div>
-    
-        <div id="data-container">
-            </div>
-    </div>
 
-    <div id="add-content" class="tab-content">
-        <div class="input-form">
-            <h2>Adicionar Ganhos Manuais</h2>
-            <input type="date" id="input-date" required>
-            <input type="number" id="input-cash" placeholder="Ganhos em Dinheiro (R$)" step="0.01" required>
-            <input type="number" id="input-app" placeholder="Ganhos no App (R$)" step="0.01" required>
-            <input type="number" id="input-request" placeholder="Valor da Solicitação (R$)" step="0.01" required>
-            <input type="number" id="input-reward" placeholder="Recompensa (R$)" step="0.01" required>
-            <input type="number" id="input-km" placeholder="KM Rodados (km)" required>
-            <input type="number" id="input-fuel" placeholder="Gasto com Combustível (R$)" step="0.01" required>
-            <button id="add-data-btn">Adicionar Ganhos</button>
+        <div class="sub-stats">
+            <div class="stat-item"><label>Combustível</label><span id="display-fuel" style="color:var(--danger)">R$ 0,00</span></div>
+            <div class="stat-item"><label>Extras</label><span id="display-expenses" style="color:var(--danger)">R$ 0,00</span></div>
+        </div>
+
+        <div style="background: var(--surface); padding: 15px; border-radius: 20px; height: 250px;">
+            <canvas id="mainChart"></canvas>
         </div>
     </div>
 
-    <div id="expenses-content" class="tab-content">
-        <div class="filter-section" id="expenses-filter-section">
-            <button id="expenses-filter-all" class="active">Todos</button>
-            <button id="expenses-filter-week">Últimos 7 dias</button>
-            <button id="expenses-filter-month-button">Últimos 30 dias</button>
-            <select id="expenses-filter-month-select">
-                <option value="all-months">Selecionar Mês</option>
-            </select>
-            <select id="expenses-filter-day">
-                <option value="all-days">Selecionar Dia</option>
-            </select>
+    <div id="tab-records" class="tab-content">
+        <div style="display:flex; justify-content:space-between; margin: 15px 0;">
+            <h3 style="font-size:1rem">Histórico</h3>
+            <button onclick="exportData()" style="color:var(--primary); background:none; border:none; font-size:0.8rem; font-weight:700">Exportar Backup</button>
         </div>
-        <div class="summary-cards">
-            <div class="summary-card">
-                <p>Total de Gastos</p>
-                <h3 id="total-expenses-display">R$0,00</h3>
-            </div>
-        </div>
-        <div id="expenses-container">
-            </div>
-    </div>
-    
-    <div id="add-expense-content" class="tab-content">
-        <div class="input-form">
-            <h2>Adicionar Gastos Manuais</h2>
-            <input type="date" id="input-expense-date" required>
-            <input type="number" id="input-expense-value" placeholder="Valor do Gasto (R$)" step="0.01" required>
-            <textarea id="input-expense-description" placeholder="Descrição do Gasto (ex: Almoço, Manutenção)" required></textarea>
-            <button id="add-expense-btn">Adicionar Gasto</button>
-        </div>
+        <div id="list-container"></div>
     </div>
 
-    <div id="financial-content" class="tab-content">
-        <div class="filter-section" id="financial-filter-section">
-            <button id="financial-filter-all" class="active">Todos</button>
-            <button id="financial-filter-week">Últimos 7 dias</button>
-            <button id="financial-filter-month-button">Últimos 30 dias</button>
-            <select id="financial-filter-month-select">
-                <option value="all-months">Selecionar Mês</option>
+    <div id="tab-add" class="tab-content">
+        <div class="form-container">
+            <h3 id="form-title" style="margin-bottom:15px; font-size:1rem">Novo Registro</h3>
+            <input type="hidden" id="edit-id">
+            <input type="hidden" id="edit-type">
+            
+            <select id="in-type-select" onchange="toggleFormFields()">
+                <option value="earning">Ganho Diário</option>
+                <option value="expense">Despesa Extra</option>
             </select>
-            <select id="financial-filter-day">
-                <option value="all-days">Selecionar Dia</option>
-            </select>
-        </div>
-        <div class="summary-cards">
-            <div class="summary-card">
-                <p>Saldo Atual</p>
-                <h3 id="total-balance-display">R$0,00</h3>
-            </div>
-        </div>
-        <div id="financial-container">
-            </div>
-    </div>
-    
-    <div id="chart-content" class="tab-content">
-        <div id="chart-container">
-            <h3 class="chart-legend">Ganhos Totais e Líquidos por Dia</h3>
-            <canvas id="dailyEarningsChart"></canvas>
-        </div>
-    </div>
 
+            <input type="date" id="in-date">
+            
+            <div id="fields-earning">
+                <input type="number" id="in-cash" placeholder="Dinheiro (R$)">
+                <input type="number" id="in-app" placeholder="App (R$)">
+                <input type="number" id="in-fuel" placeholder="Combustível (R$)">
+                <input type="number" id="in-km" placeholder="KM Total">
+            </div>
+
+            <div id="fields-expense" style="display:none">
+                <input type="number" id="in-val" placeholder="Valor (R$)">
+                <input type="text" id="in-desc" placeholder="Descrição (ex: Almoço)">
+            </div>
+
+            <button class="btn-primary" onclick="handleSave()">Salvar Registro</button>
+            <button id="btn-cancel-edit" onclick="resetForm()" style="display:none; width:100%; background:none; color:var(--text-muted); border:none; margin-top:10px">Cancelar Edição</button>
+        </div>
+    </div>
 </div>
 
+<nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('tab-dash', this)">📊<span>Início</span></button>
+    <button class="nav-item" onclick="switchTab('tab-records', this)">📋<span>Extrato</span></button>
+    <button class="nav-item" onclick="switchTab('tab-add', this)">➕<span>Lançar</span></button>
+</nav>
+
 <script>
-    const INITIAL_DATA = {
-        earnings: [
-            { date: '2025-09-12', total: 64.29, cash: 17.40, app: 46.89, request: 46.29, reward: 18.00, km_driven: 30, fuel_cost: 20 },
-            { date: '2025-09-11', total: 213.75, cash: 72.05, app: 141.70, request: 160.75, reward: 53.00, km_driven: 70, fuel_cost: 50 },
-            { date: '2025-09-10', total: 211.85, cash: 62.56, app: 149.29, request: 174.85, reward: 37.00, km_driven: 70, fuel_cost: 50 },
-            { date: '2025-09-09', total: 171.40, cash: 77.20, app: 94.20, request: 155.40, reward: 16.00, km_driven: 70, fuel_cost: 70 },
-            { date: '2025-09-08', total: 151.10, cash: 34.60, app: 116.50, request: 141.10, reward: 10.00, km_driven: 60, fuel_cost: 40 }
-        ],
-        expenses: []
-    };
+    let earnings = JSON.parse(localStorage.getItem('earnings_elite')) || [];
+    let expenses = JSON.parse(localStorage.getItem('expenses_elite')) || [];
+    let currentPeriod = 'month';
+    let selectedDate = new Date();
 
-    let earningsData;
-    let expensesData;
-    
-    const elements = {
-        viewTab: document.getElementById('view-tab'),
-        addTab: document.getElementById('add-tab'),
-        expensesTab: document.getElementById('expenses-tab'),
-        addExpenseTab: document.getElementById('add-expense-tab'),
-        financialTab: document.getElementById('financial-tab'),
-        chartTab: document.getElementById('chart-tab'),
-        viewContent: document.getElementById('view-content'),
-        addContent: document.getElementById('add-content'),
-        expensesContent: document.getElementById('expenses-content'),
-        addExpenseContent: document.getElementById('add-expense-content'),
-        financialContent: document.getElementById('financial-content'),
-        chartContent: document.getElementById('chart-content'),
-        
-        dataContainer: document.getElementById('data-container'),
-        expensesContainer: document.getElementById('expenses-container'),
-        financialContainer: document.getElementById('financial-container'),
-        
-        totalGainDisplayEl: document.getElementById('total-gain-display'),
-        totalKmEl: document.getElementById('total-km'),
-        totalFuelEl: document.getElementById('total-fuel'),
-        totalNetGainEl: document.getElementById('total-net-gain'),
-        netGainPerKmEl: document.getElementById('net-gain-per-km'),
-        fuelCostPerKmEl: document.getElementById('fuel-cost-per-km'),
-        totalExpensesDisplayEl: document.getElementById('total-expenses-display'),
-        totalBalanceDisplayEl: document.getElementById('total-balance-display'),
-        
-        earningsFilterSection: document.getElementById('earnings-filter-section'),
-        earningsFilterAllBtn: document.getElementById('earnings-filter-all'),
-        earningsFilterWeekBtn: document.getElementById('earnings-filter-week'),
-        earningsFilterMonthBtn: document.getElementById('earnings-filter-month-button'),
-        earningsFilterMonthSelect: document.getElementById('earnings-filter-month-select'),
-        earningsFilterDaySelect: document.getElementById('earnings-filter-day'),
-        
-        expensesFilterSection: document.getElementById('expenses-filter-section'),
-        expensesFilterAllBtn: document.getElementById('expenses-filter-all'),
-        expensesFilterWeekBtn: document.getElementById('expenses-filter-week'),
-        expensesFilterMonthBtn: document.getElementById('expenses-filter-month-button'),
-        expensesFilterMonthSelect: document.getElementById('expenses-filter-month-select'),
-        expensesFilterDaySelect: document.getElementById('expenses-filter-day'),
-        
-        financialFilterSection: document.getElementById('financial-filter-section'),
-        financialFilterAllBtn: document.getElementById('financial-filter-all'),
-        financialFilterWeekBtn: document.getElementById('financial-filter-week'),
-        financialFilterMonthBtn: document.getElementById('financial-filter-month-button'),
-        financialFilterMonthSelect: document.getElementById('financial-filter-month-select'),
-        financialFilterDaySelect: document.getElementById('financial-filter-day'),
+    const fC = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        inputDate: document.getElementById('input-date'),
-        inputCash: document.getElementById('input-cash'),
-        inputApp: document.getElementById('input-app'),
-        inputRequest: document.getElementById('input-request'),
-        inputReward: document.getElementById('input-reward'),
-        inputKm: document.getElementById('input-km'),
-        inputFuel: document.getElementById('input-fuel'),
-        addDataBtn: document.getElementById('add-data-btn'),
-        
-        inputExpenseDate: document.getElementById('input-expense-date'),
-        inputExpenseValue: document.getElementById('input-expense-value'),
-        inputExpenseDescription: document.getElementById('input-expense-description'),
-        addExpenseBtn: document.getElementById('add-expense-btn'),
-        
-        exportDataBtn: document.getElementById('export-data-btn'),
-        exportCsvBtn: document.getElementById('export-csv-btn'),
-        importDataBtn: document.getElementById('import-data-btn'),
-        importFile: document.getElementById('import-file'),
-        
-        dailyEarningsChart: document.getElementById('dailyEarningsChart')
-    };
-    
-    let myChart;
-    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-content, .nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        if(id === 'tab-dash') updateDashboard();
+        if(id === 'tab-records') renderList();
+    }
 
-    const formatDate = (dateString) => {
-        const [year, month, day] = dateString.split('-');
-        const date = new Date(year, month - 1, day);
-        return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
-    };
+    function toggleFormFields() {
+        const type = document.getElementById('in-type-select').value;
+        document.getElementById('fields-earning').style.display = type === 'earning' ? 'block' : 'none';
+        document.getElementById('fields-expense').style.display = type === 'expense' ? 'block' : 'none';
+    }
 
-    const saveDataToLocalStorage = () => {
-        localStorage.setItem('ganhosData', JSON.stringify(earningsData));
-        localStorage.setItem('gastosData', JSON.stringify(expensesData));
-    };
+    function setPeriod(p) {
+        currentPeriod = p;
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        renderDateControls();
+        updateDashboard();
+    }
 
-    const loadDataFromLocalStorage = () => {
-        const storedEarnings = localStorage.getItem('ganhosData');
-        const storedExpenses = localStorage.getItem('gastosData');
-        if (storedEarnings) {
-            earningsData = JSON.parse(storedEarnings);
-        } else {
-            earningsData = INITIAL_DATA.earnings;
+    function renderDateControls() {
+        const container = document.getElementById('date-controls');
+        container.innerHTML = '';
+        
+        if (currentPeriod === 'day') {
+            container.innerHTML = `<input type="date" id="filter-date" value="${selectedDate.toISOString().split('T')[0]}" onchange="updateDate(this.value)">`;
+        } else if (currentPeriod === 'month') {
+            const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+            let options = months.map((m, i) => `<option value="${i}" ${i === selectedDate.getMonth() ? 'selected' : ''}>${m}</option>`).join('');
+            container.innerHTML = `<select onchange="updateMonth(this.value)">${options}</select>
+                                   <input type="number" value="${selectedDate.getFullYear()}" onchange="updateYear(this.value)" style="width:80px">`;
+        } else if (currentPeriod === 'year') {
+            container.innerHTML = `<input type="number" value="${selectedDate.getFullYear()}" onchange="updateYear(this.value)">`;
+        } else if (currentPeriod === 'week') {
+            container.innerHTML = `<p style="font-size:0.7rem; color:var(--text-muted)">Mostrando últimos 7 dias a partir de hoje</p>`;
         }
-        if (storedExpenses) {
-            expensesData = JSON.parse(storedExpenses);
-        } else {
-            expensesData = INITIAL_DATA.expenses;
-        }
-    };
+    }
 
-    const populateEarningsFilters = () => {
-        elements.earningsFilterDaySelect.innerHTML = '<option value="all-days">Selecionar Dia</option>';
-        earningsData.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.date;
-            option.textContent = formatDate(item.date);
-            elements.earningsFilterDaySelect.appendChild(option);
-        });
+    function updateDate(v) { selectedDate = new Date(v + 'T00:00:00'); updateDashboard(); }
+    function updateMonth(v) { selectedDate.setMonth(v); updateDashboard(); }
+    function updateYear(v) { selectedDate.setFullYear(v); updateDashboard(); }
 
-        elements.earningsFilterMonthSelect.innerHTML = '<option value="all-months">Selecionar Mês</option>';
-        const months = [...new Set(earningsData.map(item => item.date.substring(0, 7)))].sort().reverse();
-        months.forEach(month => {
-            const [year, monthNumber] = month.split('-');
-            const option = document.createElement('option');
-            option.value = month;
-            option.textContent = `${monthNames[parseInt(monthNumber) - 1]} de ${year}`;
-            elements.earningsFilterMonthSelect.appendChild(option);
-        });
-    };
-    
-    const populateExpensesFilters = () => {
-        elements.expensesFilterDaySelect.innerHTML = '<option value="all-days">Selecionar Dia</option>';
-        expensesData.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.date;
-            option.textContent = formatDate(item.date);
-            elements.expensesFilterDaySelect.appendChild(option);
-        });
-
-        elements.expensesFilterMonthSelect.innerHTML = '<option value="all-months">Selecionar Mês</option>';
-        const months = [...new Set(expensesData.map(item => item.date.substring(0, 7)))].sort().reverse();
-        months.forEach(month => {
-            const [year, monthNumber] = month.split('-');
-            const option = document.createElement('option');
-            option.value = month;
-            option.textContent = `${monthNames[parseInt(monthNumber) - 1]} de ${year}`;
-            elements.expensesFilterMonthSelect.appendChild(option);
-        });
-    };
-    
-    const populateFinancialFilters = () => {
-        elements.financialFilterDaySelect.innerHTML = '<option value="all-days">Selecionar Dia</option>';
-        const allDates = [...new Set([...earningsData.map(i => i.date), ...expensesData.map(i => i.date)])].sort().reverse();
-        allDates.forEach(date => {
-            const option = document.createElement('option');
-            option.value = date;
-            option.textContent = formatDate(date);
-            elements.financialFilterDaySelect.appendChild(option);
-        });
-
-        elements.financialFilterMonthSelect.innerHTML = '<option value="all-months">Selecionar Mês</option>';
-        const allMonths = [...new Set(allDates.map(i => i.substring(0, 7)))].sort().reverse();
-        allMonths.forEach(month => {
-            const [year, monthNumber] = month.split('-');
-            const option = document.createElement('option');
-            option.value = month;
-            option.textContent = `${monthNames[parseInt(monthNumber) - 1]} de ${year}`;
-            elements.financialFilterMonthSelect.appendChild(option);
-        });
-    };
-
-    const renderEarningsCards = (filteredData) => {
-        elements.dataContainer.innerHTML = '';
-        if (filteredData.length === 0) {
-            elements.dataContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #999;">Nenhum dado encontrado para o período selecionado.</div>';
-            return;
-        }
-
-        filteredData.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-header">
-                    <h2>${formatDate(item.date)}</h2>
-                    <div class="total-gain">R$${item.total.toFixed(2).replace('.', ',')}</div>
-                </div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <p>Ganhos em Dinheiro</p>
-                        <span>R$${item.cash.toFixed(2).replace('.', ',')}</span>
-                    </div>
-                    <div class="detail-item">
-                        <p>Ganhos no App</p>
-                        <span>R$${item.app.toFixed(2).replace('.', ',')}</span>
-                    </div>
-                    <div class="detail-item">
-                        <p>Valor da Solicitação</p>
-                        <span>R$${item.request.toFixed(2).replace('.', ',')}</span>
-                    </div>
-                    <div class="detail-item">
-                        <p>Recompensa</p>
-                        <span>R$${item.reward.toFixed(2).replace('.', ',')}</span>
-                    </div>
-                    <div class="detail-item">
-                        <p>KM Rodados</p>
-                        <span>${item.km_driven.toFixed(0)} km</span>
-                    </div>
-                    <div class="detail-item">
-                        <p>Gasto com Combustível</p>
-                        <span>R$${item.fuel_cost.toFixed(2).replace('.', ',')}</span>
-                    </div>
-                </div>
-                <div class="action-buttons">
-                    <button class="edit-btn" data-type="earnings" data-date="${item.date}">Editar</button>
-                    <button class="delete-btn" data-type="earnings" data-date="${item.date}">Apagar</button>
-                </div>
-            `;
-            elements.dataContainer.appendChild(card);
-        });
-
-        setupActionButtons();
-    };
-    
-    const renderExpensesCards = (filteredData) => {
-        elements.expensesContainer.innerHTML = '';
-        if (filteredData.length === 0) {
-            elements.expensesContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #999;">Nenhum gasto encontrado.</div>';
-            return;
-        }
-
-        const sortedExpenses = filteredData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        sortedExpenses.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-header">
-                    <h2>${formatDate(item.date)}</h2>
-                    <div class="total-expense">R$${item.value.toFixed(2).replace('.', ',')}</div>
-                </div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <p>Descrição</p>
-                        <span>${item.description}</span>
-                    </div>
-                </div>
-                <div class="action-buttons">
-                    <button class="edit-btn" data-type="expenses" data-index="${index}" data-date="${item.date}">Editar</button>
-                    <button class="delete-btn" data-type="expenses" data-index="${index}" data-date="${item.date}">Apagar</button>
-                </div>
-            `;
-            elements.expensesContainer.appendChild(card);
-        });
-
-        setupActionButtons();
-    };
-    
-    const renderFinancialCards = (filteredData) => {
-        elements.financialContainer.innerHTML = '';
-        if (filteredData.length === 0) {
-            elements.financialContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #999;">Nenhuma transação encontrada para o período.</div>';
-            return;
-        }
-        
-        filteredData.forEach(item => {
-            const card = document.createElement('div');
-            const headerClass = item.type === 'gain' ? 'total-gain' : 'total-expense';
-            const value = item.value;
-            
-            card.className = `card card-financial ${item.type}`;
-            card.innerHTML = `
-                <div class="card-header">
-                    <h2>${formatDate(item.date)}</h2>
-                    <div class="${headerClass}">R$${value.toFixed(2).replace('.', ',')}</div>
-                </div>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <p>Tipo</p>
-                        <span>${item.type === 'gain' ? 'Ganho' : 'Gasto'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <p>Descrição</p>
-                        <span>${item.description}</span>
-                    </div>
-                </div>
-            `;
-            elements.financialContainer.appendChild(card);
-        });
-    };
-
-    const setupActionButtons = () => {
-        document.querySelectorAll('.edit-btn[data-type="earnings"]').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const dateToEdit = event.target.dataset.date;
-                const entry = earningsData.find(item => item.date === dateToEdit);
-                if (entry) {
-                    elements.inputDate.value = entry.date;
-                    elements.inputCash.value = entry.cash;
-                    elements.inputApp.value = entry.app;
-                    elements.inputRequest.value = entry.request;
-                    elements.inputReward.value = entry.reward;
-                    elements.inputKm.value = entry.km_driven;
-                    elements.inputFuel.value = entry.fuel_cost;
-                    elements.addTab.click();
-                }
-            });
-        });
-
-        document.querySelectorAll('.delete-btn[data-type="earnings"]').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const dateToDelete = event.target.dataset.date;
-                if (confirm('Tem certeza que deseja apagar esta entrada de ganho?')) {
-                    earningsData = earningsData.filter(item => item.date !== dateToDelete);
-                    saveDataToLocalStorage();
-                    populateEarningsFilters();
-                    filterEarningsData('all');
-                }
-            });
-        });
-        
-        document.querySelectorAll('.edit-btn[data-type="expenses"]').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const indexToEdit = event.target.dataset.index;
-                const entry = expensesData[indexToEdit];
-                if (entry) {
-                    elements.inputExpenseDate.value = entry.date;
-                    elements.inputExpenseValue.value = entry.value;
-                    elements.inputExpenseDescription.value = entry.description;
-                    elements.addExpenseTab.click();
-                }
-            });
-        });
-
-        document.querySelectorAll('.delete-btn[data-type="expenses"]').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const indexToDelete = event.target.dataset.index;
-                if (confirm('Tem certeza que deseja apagar este gasto?')) {
-                    expensesData.splice(indexToDelete, 1);
-                    saveDataToLocalStorage();
-                    filterExpensesData('all');
-                    updateTotalExpenses();
-                }
-            });
-        });
-    };
-
-    const calculateEarningsTotals = (dataToSum) => {
-        const totalGain = dataToSum.reduce((sum, item) => sum + item.total, 0);
-        const totalKm = dataToSum.reduce((sum, item) => sum + item.km_driven, 0);
-        const totalFuel = dataToSum.reduce((sum, item) => sum + item.fuel_cost, 0);
-        const totalNetGain = totalGain - totalFuel;
-        const netGainPerKm = totalKm > 0 ? totalNetGain / totalKm : 0;
-        const fuelCostPerKm = totalKm > 0 ? totalFuel / totalKm : 0;
-        
-        return {
-            gain: totalGain.toFixed(2).replace('.', ','),
-            km: totalKm.toFixed(0),
-            fuel: totalFuel.toFixed(2).replace('.', ','),
-            netGain: totalNetGain.toFixed(2).replace('.', ','),
-            netGainPerKm: netGainPerKm.toFixed(2).replace('.', ','),
-            fuelCostPerKm: fuelCostPerKm.toFixed(2).replace('.', ',')
-        };
-    };
-    
-    const updateTotalExpenses = (dataToSum = expensesData) => {
-        const total = dataToSum.reduce((sum, item) => sum + item.value, 0);
-        elements.totalExpensesDisplayEl.textContent = `R$${total.toFixed(2).replace('.', ',')}`;
-    };
-    
-    const calculateBalance = (filteredData) => {
-        const totalGains = filteredData.filter(i => i.type === 'gain').reduce((sum, i) => sum + i.value, 0);
-        const totalExpenses = filteredData.filter(i => i.type === 'expense').reduce((sum, i) => sum + i.value, 0);
-        const balance = totalGains - totalExpenses;
-        elements.totalBalanceDisplayEl.textContent = `R$${balance.toFixed(2).replace('.', ',')}`;
-        if (balance < 0) {
-            elements.totalBalanceDisplayEl.classList.add('negative-balance');
-        } else {
-            elements.totalBalanceDisplayEl.classList.remove('negative-balance');
-        }
-    };
-
-    const updateSummaryTotals = (filteredData) => {
-        const totals = calculateEarningsTotals(filteredData);
-        elements.totalGainDisplayEl.textContent = `R$${totals.gain}`;
-        elements.totalKmEl.textContent = `${totals.km} km`;
-        elements.totalFuelEl.textContent = `R$${totals.fuel}`;
-        elements.totalNetGainEl.textContent = `R$${totals.netGain}`;
-        elements.netGainPerKmEl.textContent = `R$${totals.netGainPerKm}`;
-        elements.fuelCostPerKmEl.textContent = `R$${totals.fuelCostPerKm}`;
-    };
-
-    const setActiveButton = (sectionId, activeElement) => {
-        document.querySelectorAll(`#${sectionId} button`).forEach(button => {
-            button.classList.remove('active');
-        });
-        activeElement.classList.add('active');
-    };
-    
-    const filterEarningsData = (range, value = null) => {
-        let filteredData = [];
-
-        if (range === 'all') {
-            filteredData = earningsData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'week') {
-            const today = earningsData.length > 0 ? new Date(earningsData[0].date) : new Date();
-            const sevenDaysAgo = new Date(today);
-            sevenDaysAgo.setDate(today.getDate() - 7);
-            filteredData = earningsData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= sevenDaysAgo && itemDate <= today;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'month-button') {
-            const today = earningsData.length > 0 ? new Date(earningsData[0].date) : new Date();
-            const thirtyDaysAgo = new Date(today);
-            thirtyDaysAgo.setDate(today.getDate() - 30);
-            filteredData = earningsData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= thirtyDaysAgo && itemDate <= today;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'month-select') {
-            filteredData = earningsData.filter(item => item.date.substring(0, 7) === value)
-                            .sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'day') {
-            filteredData = earningsData.filter(item => item.date === value);
-        }
-
-        renderEarningsCards(filteredData);
-        updateSummaryTotals(filteredData);
-    };
-    
-    const filterExpensesData = (range, value = null) => {
-        let filteredData = [];
-
-        if (range === 'all') {
-            filteredData = expensesData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'week') {
-            const today = expensesData.length > 0 ? new Date(expensesData[0].date) : new Date();
-            const sevenDaysAgo = new Date(today);
-            sevenDaysAgo.setDate(today.getDate() - 7);
-            filteredData = expensesData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= sevenDaysAgo && itemDate <= today;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'month-button') {
-            const today = expensesData.length > 0 ? new Date(expensesData[0].date) : new Date();
-            const thirtyDaysAgo = new Date(today);
-            thirtyDaysAgo.setDate(today.getDate() - 30);
-            filteredData = expensesData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= thirtyDaysAgo && itemDate <= today;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'month-select') {
-            filteredData = expensesData.filter(item => item.date.substring(0, 7) === value)
-                            .sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'day') {
-            filteredData = expensesData.filter(item => item.date === value);
-        }
-
-        renderExpensesCards(filteredData);
-        updateTotalExpenses(filteredData);
-    };
-    
-    const filterFinancialData = (range, value = null) => {
-        let combinedData = [
-            ...earningsData.map(item => ({ date: item.date, value: item.total, description: 'Ganhos e Recompensas', type: 'gain' })),
-            ...earningsData.map(item => ({ date: item.date, value: item.fuel_cost, description: 'Gasto com Combustível', type: 'expense' })),
-            ...expensesData.map(item => ({ date: item.date, value: item.value, description: item.description, type: 'expense' }))
-        ];
-        
-        let filteredData = [];
-        
-        if (range === 'all') {
-            filteredData = combinedData.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'week') {
-            const allDates = [...earningsData.map(i => i.date), ...expensesData.map(i => i.date)];
-            const mostRecentDate = allDates.length > 0 ? new Date(allDates.sort().reverse()[0]) : new Date();
-            const sevenDaysAgo = new Date(mostRecentDate);
-            sevenDaysAgo.setDate(mostRecentDate.getDate() - 7);
-            filteredData = combinedData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= sevenDaysAgo && itemDate <= mostRecentDate;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'month-button') {
-            const allDates = [...earningsData.map(i => i.date), ...expensesData.map(i => i.date)];
-            const mostRecentDate = allDates.length > 0 ? new Date(allDates.sort().reverse()[0]) : new Date();
-            const thirtyDaysAgo = new Date(mostRecentDate);
-            thirtyDaysAgo.setDate(mostRecentDate.getDate() - 30);
-            filteredData = combinedData.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= thirtyDaysAgo && itemDate <= mostRecentDate;
-            }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'month-select') {
-            filteredData = combinedData.filter(item => item.date.substring(0, 7) === value)
-                            .sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (range === 'day') {
-            filteredData = combinedData.filter(item => item.date === value);
-        }
-        
-        renderFinancialCards(filteredData);
-        calculateBalance(filteredData);
-    };
-    
-    const addEarningsData = () => {
-        const dateInput = elements.inputDate;
-        const cashInput = elements.inputCash;
-        const appInput = elements.inputApp;
-        const requestInput = elements.inputRequest;
-        const rewardInput = elements.inputReward;
-        const kmInput = elements.inputKm;
-        const fuelInput = elements.inputFuel;
-
-        if (!dateInput.value || !cashInput.value || !appInput.value || !requestInput.value || !rewardInput.value || !kmInput.value || !fuelInput.value) {
-            alert('Por favor, preencha todos os campos de ganhos.');
-            return;
-        }
-
-        const newEntry = {
-            date: dateInput.value,
-            cash: parseFloat(cashInput.value),
-            app: parseFloat(appInput.value),
-            request: parseFloat(requestInput.value),
-            reward: parseFloat(rewardInput.value),
-            km_driven: parseFloat(kmInput.value),
-            fuel_cost: parseFloat(fuelInput.value),
-            total: parseFloat(cashInput.value) + parseFloat(appInput.value)
-        };
-
-        const existingEntryIndex = earningsData.findIndex(item => item.date === newEntry.date);
-        if (existingEntryIndex > -1) {
-            earningsData[existingEntryIndex] = newEntry; 
-        } else {
-            earningsData.push(newEntry);
-        }
-
-        earningsData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        saveDataToLocalStorage();
-
-        populateEarningsFilters();
-        populateFinancialFilters();
-        
-        setActiveButton('earnings-filter-section', elements.earningsFilterAllBtn);
-        elements.earningsFilterMonthSelect.value = 'all-months';
-        elements.earningsFilterDaySelect.value = 'all-days';
-        filterEarningsData('all');
-
-        dateInput.value = '';
-        cashInput.value = '';
-        appInput.value = '';
-        requestInput.value = '';
-        rewardInput.value = '';
-        kmInput.value = '';
-        fuelInput.value = '';
-
-        elements.viewTab.click();
-    };
-    
-    const addExpenseData = () => {
-        const dateInput = elements.inputExpenseDate;
-        const valueInput = elements.inputExpenseValue;
-        const descriptionInput = elements.inputExpenseDescription;
-        
-        if (!dateInput.value || !valueInput.value || !descriptionInput.value) {
-            alert('Por favor, preencha todos os campos de gastos.');
-            return;
-        }
-        
-        const newExpense = {
-            date: dateInput.value,
-            value: parseFloat(valueInput.value),
-            description: descriptionInput.value
-        };
-        
-        expensesData.push(newExpense);
-        saveDataToLocalStorage();
-        populateExpensesFilters();
-        populateFinancialFilters();
-        
-        setActiveButton('expenses-filter-section', elements.expensesFilterAllBtn);
-        elements.expensesFilterMonthSelect.value = 'all-months';
-        elements.expensesFilterDaySelect.value = 'all-days';
-        filterExpensesData('all');
-        updateTotalExpenses();
-        
-        dateInput.value = '';
-        valueInput.value = '';
-        descriptionInput.value = '';
-        
-        elements.expensesTab.click();
-    };
-
-    const exportData = () => {
-        const allData = { earnings: earningsData, expenses: expensesData };
-        const jsonData = JSON.stringify(allData, null, 2);
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'dados_ganhos_e_gastos.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
-
-    const exportToCsv = () => {
-        if (earningsData.length === 0) {
-            alert('Não há dados para exportar.');
-            return;
-        }
-        
-        const headers = Object.keys(earningsData[0]);
-        const csvRows = [
-            headers.join(','),
-            ...earningsData.map(row => headers.map(header => {
-                const value = row[header];
-                const escaped = ('' + value).replace(/"/g, '""');
-                return `"${escaped}"`;
-            }).join(','))
-        ];
-
-        const csvString = csvRows.join('\n');
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'dados_ganhos.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
-
-    const importData = (event) => {
-        const file = event.target.files[0];
-        if (!file) {
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.earnings && Array.isArray(importedData.earnings) && importedData.expenses && Array.isArray(importedData.expenses)) {
-                    earningsData = importedData.earnings;
-                    expensesData = importedData.expenses;
-                    saveDataToLocalStorage();
-                    populateEarningsFilters();
-                    populateExpensesFilters();
-                    populateFinancialFilters();
-                    filterEarningsData('all');
-                    filterExpensesData('all');
-                    filterFinancialData('all');
-                    updateTotalExpenses();
-                    alert('Dados importados com sucesso!');
-                } else {
-                    alert('O arquivo não contém dados válidos.');
-                }
-            } catch (error) {
-                alert('Ocorreu um erro ao ler o arquivo. Verifique se o formato está correto.');
+    function filterData(data) {
+        return data.filter(item => {
+            const d = new Date(item.date + 'T00:00:00');
+            if (currentPeriod === 'day') return d.toDateString() === selectedDate.toDateString();
+            if (currentPeriod === 'month') return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear();
+            if (currentPeriod === 'year') return d.getFullYear() === selectedDate.getFullYear();
+            if (currentPeriod === 'week') {
+                const diff = (new Date() - d) / (1000 * 60 * 60 * 24);
+                return diff >= 0 && diff <= 7;
             }
-        };
-        reader.readAsText(file);
-    };
+            return true;
+        });
+    }
 
-    const updateChart = () => {
-        const sortedData = earningsData.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
-        const labels = sortedData.map(item => item.date);
-        const totalEarnings = sortedData.map(item => item.total);
-        const netEarnings = sortedData.map(item => item.total - item.fuel_cost);
+    function handleSave() {
+        const type = document.getElementById('in-type-select').value;
+        const id = document.getElementById('edit-id').value;
         
-        const chartData = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Ganho Total (R$)',
-                    data: totalEarnings,
-                    borderColor: '#03dac6',
-                    backgroundColor: 'rgba(3, 218, 198, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Ganho Líquido (R$)',
-                    data: netEarnings,
-                    borderColor: '#bb86fc',
-                    backgroundColor: 'rgba(187, 134, 252, 0.2)',
-                    fill: true,
-                    tension: 0.4
-                }
-            ]
+        const entry = {
+            id: id || Date.now(),
+            date: document.getElementById('in-date').value,
+            type: type
         };
+
+        if(type === 'earning') {
+            entry.cash = parseFloat(document.getElementById('in-cash').value) || 0;
+            entry.app = parseFloat(document.getElementById('in-app').value) || 0;
+            entry.fuel = parseFloat(document.getElementById('in-fuel').value) || 0;
+            entry.km = parseFloat(document.getElementById('in-km').value) || 0;
+        } else {
+            entry.val = parseFloat(document.getElementById('in-val').value) || 0;
+            entry.desc = document.getElementById('in-desc').value;
+        }
+
+        if(!entry.date) return alert('Data é obrigatória');
+
+        if(id) { // Editando
+            if(type === 'earning') earnings = earnings.map(e => e.id == id ? entry : e);
+            else expenses = expenses.map(e => e.id == id ? entry : e);
+        } else { // Novo
+            if(type === 'earning') earnings.unshift(entry);
+            else expenses.unshift(entry);
+        }
+
+        localStorage.setItem('earnings_elite', JSON.stringify(earnings));
+        localStorage.setItem('expenses_elite', JSON.stringify(expenses));
+        resetForm();
+        switchTab('tab-dash', document.querySelector('.nav-item'));
+    }
+
+    function editItem(id, type) {
+        const item = type === 'earning' ? earnings.find(e => e.id == id) : expenses.find(e => e.id == id);
+        switchTab('tab-add', document.querySelectorAll('.nav-item')[2]);
         
-        const chartConfig = {
+        document.getElementById('form-title').innerText = "Editar Registro";
+        document.getElementById('edit-id').value = id;
+        document.getElementById('in-type-select').value = type;
+        document.getElementById('in-date').value = item.date;
+        document.getElementById('btn-cancel-edit').style.display = 'block';
+        
+        if(type === 'earning') {
+            document.getElementById('in-cash').value = item.cash;
+            document.getElementById('in-app').value = item.app;
+            document.getElementById('in-fuel').value = item.fuel;
+            document.getElementById('in-km').value = item.km;
+        } else {
+            document.getElementById('in-val').value = item.val;
+            document.getElementById('in-desc').value = item.desc;
+        }
+        toggleFormFields();
+    }
+
+    function deleteItem(id, type) {
+        if(!confirm('Excluir este registro?')) return;
+        if(type === 'earning') earnings = earnings.filter(e => e.id != id);
+        else expenses = expenses.filter(e => e.id != id);
+        localStorage.setItem('earnings_elite', JSON.stringify(earnings));
+        localStorage.setItem('expenses_elite', JSON.stringify(expenses));
+        renderList();
+        updateDashboard();
+    }
+
+    function resetForm() {
+        document.getElementById('edit-id').value = '';
+        document.getElementById('form-title').innerText = "Novo Registro";
+        document.getElementById('btn-cancel-edit').style.display = 'none';
+        document.querySelectorAll('#tab-add input').forEach(i => i.value = '');
+        toggleFormFields();
+    }
+
+    function updateDashboard() {
+        const fEarn = filterData(earnings);
+        const fExp = filterData(expenses);
+
+        const gross = fEarn.reduce((s, i) => s + (i.cash + i.app), 0);
+        const fuel = fEarn.reduce((s, i) => s + i.fuel, 0);
+        const extra = fExp.reduce((s, i) => s + i.val, 0);
+        const km = fEarn.reduce((s, i) => s + i.km, 0);
+
+        document.getElementById('display-balance').innerText = fC(gross - fuel - extra);
+        document.getElementById('display-gross').innerText = fC(gross);
+        document.getElementById('display-fuel').innerText = fC(fuel);
+        document.getElementById('display-expenses').innerText = fC(extra);
+        document.getElementById('display-km').innerText = km;
+        
+        renderChart(fEarn);
+    }
+
+    function renderList() {
+        const container = document.getElementById('list-container');
+        container.innerHTML = '';
+        const all = [...earnings, ...expenses].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+        all.forEach(item => {
+            const isEarn = item.type === 'earning';
+            container.innerHTML += `
+                <div class="transaction-card" style="border-left-color: ${isEarn ? 'var(--success)' : 'var(--danger)'}">
+                    <div class="t-header">
+                        <div class="t-info">
+                            <h4>${isEarn ? 'Ganho Diário' : item.desc}</h4>
+                            <p>${item.date.split('-').reverse().join('/')}</p>
+                        </div>
+                        <div class="t-amount" style="color:${isEarn ? 'var(--success)' : 'var(--danger)'}">
+                            ${isEarn ? fC(item.cash + item.app) : fC(item.val)}
+                        </div>
+                    </div>
+                    <div class="t-actions">
+                        <button class="btn-sm btn-edit" onclick="editItem(${item.id}, '${item.type}')">Editar</button>
+                        <button class="btn-sm btn-del" onclick="deleteItem(${item.id}, '${item.type}')">Excluir</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    let chart;
+    function renderChart(data) {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        if(chart) chart.destroy();
+        const lastDays = data.slice(0, 7).reverse();
+        chart = new Chart(ctx, {
             type: 'line',
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: { color: '#444' },
-                        ticks: { color: '#aaa' }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#444' },
-                        ticks: { color: '#aaa' }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: { color: '#fff' }
-                    }
-                }
-            }
+            data: {
+                labels: lastDays.map(i => i.date.split('-')[2]),
+                datasets: [{ label: 'Bruto', data: lastDays.map(i => i.cash + i.app), borderColor: '#6366f1', tension: 0.4, fill:true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+        });
+    }
+
+    function exportData() {
+        const blob = new Blob([JSON.stringify({earnings, expenses})], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `backup_financeiro.json`;
+        a.click();
+    }
+
+    function importData(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const data = JSON.parse(ev.target.result);
+            earnings = data.earnings || [];
+            expenses = data.expenses || [];
+            localStorage.setItem('earnings_elite', JSON.stringify(earnings));
+            localStorage.setItem('expenses_elite', JSON.stringify(expenses));
+            updateDashboard();
+            alert('Dados Restaurados!');
         };
+        reader.readAsText(e.target.files[0]);
+    }
 
-        const ctx = elements.dailyEarningsChart.getContext('2d');
-        if (myChart) {
-            myChart.destroy();
-        }
-        myChart = new Chart(ctx, chartConfig);
-    };
-
-    elements.viewTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content, .tabs button').forEach(el => el.classList.remove('active'));
-        elements.viewTab.classList.add('active');
-        elements.viewContent.classList.add('active');
-        populateEarningsFilters();
-        filterEarningsData('all');
-    });
-
-    elements.addTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content, .tabs button').forEach(el => el.classList.remove('active'));
-        elements.addTab.classList.add('active');
-        elements.addContent.classList.add('active');
-    });
-    
-    elements.expensesTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content, .tabs button').forEach(el => el.classList.remove('active'));
-        elements.expensesTab.classList.add('active');
-        elements.expensesContent.classList.add('active');
-        populateExpensesFilters();
-        filterExpensesData('all');
-    });
-    
-    elements.addExpenseTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content, .tabs button').forEach(el => el.classList.remove('active'));
-        elements.addExpenseTab.classList.add('active');
-        elements.addExpenseContent.classList.add('active');
-    });
-    
-    elements.financialTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content, .tabs button').forEach(el => el.classList.remove('active'));
-        elements.financialTab.classList.add('active');
-        elements.financialContent.classList.add('active');
-        populateFinancialFilters();
-        filterFinancialData('all');
-    });
-    
-    elements.chartTab.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content, .tabs button').forEach(el => el.classList.remove('active'));
-        elements.chartTab.classList.add('active');
-        elements.chartContent.classList.add('active');
-        updateChart();
-    });
-
-    elements.earningsFilterSection.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            setActiveButton('earnings-filter-section', e.target);
-            elements.earningsFilterMonthSelect.value = 'all-months';
-            elements.earningsFilterDaySelect.value = 'all-days';
-            const id = e.target.id;
-            if (id === 'earnings-filter-all') filterEarningsData('all');
-            else if (id === 'earnings-filter-week') filterEarningsData('week');
-            else if (id === 'earnings-filter-month-button') filterEarningsData('month-button');
-        }
-    });
-
-    elements.earningsFilterMonthSelect.addEventListener('change', (event) => {
-        document.querySelectorAll('#earnings-filter-section button').forEach(btn => btn.classList.remove('active'));
-        elements.earningsFilterDaySelect.value = 'all-days';
-        const selectedMonth = event.target.value;
-        if (selectedMonth !== 'all-months') {
-            filterEarningsData('month-select', selectedMonth);
-        } else {
-            elements.earningsFilterAllBtn.classList.add('active');
-            filterEarningsData('all');
-        }
-    });
-
-    elements.earningsFilterDaySelect.addEventListener('change', (event) => {
-        document.querySelectorAll('#earnings-filter-section button').forEach(btn => btn.classList.remove('active'));
-        elements.earningsFilterMonthSelect.value = 'all-months';
-        const selectedDate = event.target.value;
-        if (selectedDate !== 'all-days') {
-            filterEarningsData('day', selectedDate);
-        } else {
-            elements.earningsFilterAllBtn.classList.add('active');
-            filterEarningsData('all');
-        }
-    });
-
-    elements.expensesFilterSection.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            setActiveButton('expenses-filter-section', e.target);
-            elements.expensesFilterMonthSelect.value = 'all-months';
-            elements.expensesFilterDaySelect.value = 'all-days';
-            const id = e.target.id;
-            if (id === 'expenses-filter-all') filterExpensesData('all');
-            else if (id === 'expenses-filter-week') filterExpensesData('week');
-            else if (id === 'expenses-filter-month-button') filterExpensesData('month-button');
-        }
-    });
-
-    elements.expensesFilterMonthSelect.addEventListener('change', (event) => {
-        document.querySelectorAll('#expenses-filter-section button').forEach(btn => btn.classList.remove('active'));
-        elements.expensesFilterDaySelect.value = 'all-days';
-        const selectedMonth = event.target.value;
-        if (selectedMonth !== 'all-months') {
-            filterExpensesData('month-select', selectedMonth);
-        } else {
-            elements.expensesFilterAllBtn.classList.add('active');
-            filterExpensesData('all');
-        }
-    });
-
-    elements.expensesFilterDaySelect.addEventListener('change', (event) => {
-        document.querySelectorAll('#expenses-filter-section button').forEach(btn => btn.classList.remove('active'));
-        elements.expensesFilterMonthSelect.value = 'all-months';
-        const selectedDate = event.target.value;
-        if (selectedDate !== 'all-days') {
-            filterExpensesData('day', selectedDate);
-        } else {
-            elements.expensesFilterAllBtn.classList.add('active');
-            filterExpensesData('all');
-        }
-    });
-    
-    elements.financialFilterSection.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            setActiveButton('financial-filter-section', e.target);
-            elements.financialFilterMonthSelect.value = 'all-months';
-            elements.financialFilterDaySelect.value = 'all-days';
-            const id = e.target.id;
-            if (id === 'financial-filter-all') filterFinancialData('all');
-            else if (id === 'financial-filter-week') filterFinancialData('week');
-            else if (id === 'financial-filter-month-button') filterFinancialData('month-button');
-        }
-    });
-
-    elements.financialFilterMonthSelect.addEventListener('change', (event) => {
-        document.querySelectorAll('#financial-filter-section button').forEach(btn => btn.classList.remove('active'));
-        elements.financialFilterDaySelect.value = 'all-days';
-        const selectedMonth = event.target.value;
-        if (selectedMonth !== 'all-months') {
-            filterFinancialData('month-select', selectedMonth);
-        } else {
-            elements.financialFilterAllBtn.classList.add('active');
-            filterFinancialData('all');
-        }
-    });
-
-    elements.financialFilterDaySelect.addEventListener('change', (event) => {
-        document.querySelectorAll('#financial-filter-section button').forEach(btn => btn.classList.remove('active'));
-        elements.financialFilterMonthSelect.value = 'all-months';
-        const selectedDate = event.target.value;
-        if (selectedDate !== 'all-days') {
-            filterFinancialData('day', selectedDate);
-        } else {
-            elements.financialFilterAllBtn.classList.add('active');
-            filterFinancialData('all');
-        }
-    });
-    
-    elements.addDataBtn.addEventListener('click', addEarningsData);
-    elements.addExpenseBtn.addEventListener('click', addExpenseData);
-    elements.exportDataBtn.addEventListener('click', exportData);
-    elements.exportCsvBtn.addEventListener('click', exportToCsv);
-    elements.importDataBtn.addEventListener('click', () => elements.importFile.click());
-    elements.importFile.addEventListener('change', importData);
-
-    window.onload = () => {
-        loadDataFromLocalStorage();
-        populateEarningsFilters();
-        populateExpensesFilters();
-        populateFinancialFilters();
-        filterEarningsData('all');
-        filterExpensesData('all');
-        filterFinancialData('all');
-        updateTotalExpenses();
-    };
+    window.onload = () => { renderDateControls(); updateDashboard(); };
 </script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registrado!'))
-        .catch(err => console.log('Erro:', err));
-    });
-  }
-</script>
-
-
 </body>
 </html>
